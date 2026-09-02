@@ -163,6 +163,16 @@ export function EditProfileModal({ isOpen, onClose, onUpdated }) {
                 </button>
             </div>
 
+              <button
+                type="button"
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={uploadingImage !== null}
+                className="ml-4 -mt-1 inline-flex items-center gap-2 rounded-full border border-[#D4A574]/30 px-3 py-1.5 text-xs font-bold text-[#D4A574] hover:bg-[#D4A574]/10 disabled:opacity-60 transition"
+              >
+                <Camera className="w-3.5 h-3.5" />
+                {uploadingImage === 'avatar' ? 'Uploading...' : 'Upload avatar'}
+              </button>
+
             <div className="space-y-4 pt-2">
               <div>
                 <label className="block text-xs font-semibold tracking-wider uppercase text-[#D4A574]/80 mb-1.5">
@@ -193,32 +203,6 @@ export function EditProfileModal({ isOpen, onClose, onUpdated }) {
                 <span className="block text-right text-[10px] text-[#A8888D] font-mono mt-0.5">
                   {bio.length} / 160
                 </span>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold tracking-wider uppercase text-[#D4A574]/80 mb-1.5">
-                  Avatar Image URL
-                </label>
-                <input
-                  type="text"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  className="w-full bg-[#160B0F] text-[#F5EDE8] px-4 py-2.5 rounded-xl border border-[#D4A574]/20 focus:outline-none focus:border-[#D4A574] text-sm"
-                  placeholder="https://images.unsplash.com/..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold tracking-wider uppercase text-[#D4A574]/80 mb-1.5">
-                  Cover Image URL
-                </label>
-                <input
-                  type="text"
-                  value={coverUrl}
-                  onChange={(e) => setCoverUrl(e.target.value)}
-                  className="w-full bg-[#160B0F] text-[#F5EDE8] px-4 py-2.5 rounded-xl border border-[#D4A574]/20 focus:outline-none focus:border-[#D4A574] text-sm"
-                  placeholder="https://images.unsplash.com/..."
-                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
