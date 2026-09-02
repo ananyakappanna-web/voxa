@@ -1,0 +1,13 @@
+{
+  "name": "voxa",
+  "version": "1.0.0",
+  "description": "Voxa - Full-Stack Social Media Platform (Twitter/X Clone)",
+  "scripts": {
+    "server": "cd server && npm start",
+    "client": "cd client && npm run dev",
+    "seed": "cd server && npm run seed",
+    "build": "cd client && npm run build",
+    "start": "node server/src/index.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  }
+}

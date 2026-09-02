@@ -1,0 +1,8 @@
+node_modules/
+client/dist/
+server/.env
+server/*.db
+server/*.db-*
+server/uploads/*
+!server/uploads/.gitkeep
+npm-debug.log*
