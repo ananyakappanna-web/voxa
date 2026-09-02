@@ -7,6 +7,7 @@ const path = require('path');
 const { Server } = require('socket.io');
 
 const db = require('./db');
+const seedDatabase = require('./db/seed');
 const { initSocket } = require('./socket');
 
 // Routes
@@ -71,6 +72,19 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`🚀 Voxa Server running on http://localhost:${PORT}`);
+
+async function startServer() {
+  const userCount = db.prepare('SELECT COUNT(*) AS count FROM users').get().count;
+  if (userCount === 0) {
+    await seedDatabase();
+  }
+
+  server.listen(PORT, () => {
+    console.log(`🚀 Voxa Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer().catch((err) => {
+  console.error('❌ Failed to start Voxa server:', err);
+  process.exit(1);
 });

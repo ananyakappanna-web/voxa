@@ -341,7 +341,11 @@ async function seed() {
   console.log('✅ Database seeded successfully with 8 users, 16 posts & replies, follows, likes, notifications, and DMs!');
 }
 
-seed().catch(err => {
-  console.error('❌ Error seeding database:', err);
-  process.exit(1);
-});
+module.exports = seed;
+
+if (require.main === module) {
+  seed().catch(err => {
+    console.error('❌ Error seeding database:', err);
+    process.exit(1);
+  });
+}
