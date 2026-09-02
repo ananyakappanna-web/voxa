@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 
 const db = require('./db');
 const seedDatabase = require('./db/seed');
+const ensureDemoData = require('./db/ensure-demo-data');
 const { initSocket } = require('./socket');
 
 // Routes
@@ -78,6 +79,7 @@ async function startServer() {
   if (userCount === 0) {
     await seedDatabase();
   }
+  ensureDemoData();
 
   server.listen(PORT, () => {
     console.log(`🚀 Voxa Server running on http://localhost:${PORT}`);
