@@ -2,6 +2,9 @@
   "name": "voxa",
   "version": "1.0.0",
   "description": "Voxa - Full-Stack Social Media Platform (Twitter/X Clone)",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "server": "cd server && npm start",
     "client": "cd client && npm run dev",
