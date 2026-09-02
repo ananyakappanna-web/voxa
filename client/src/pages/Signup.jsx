@@ -6,7 +6,7 @@ import { Button } from '../components/common/Button';
 import { Logo } from '../components/common/Logo';
 
 export function Signup() {
-  const { signup } = useAuth();
+  const { verifySignupOtp } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -16,6 +16,9 @@ export function Signup() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [step, setStep] = useState('details');
+  const [otp, setOtp] = useState('');
+  const [resendIn, setResendIn] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,11 +36,64 @@ export function Signup() {
     setError('');
 
     try {
-      await signup(username.trim(), email.trim(), password, displayName.trim());
-      showToast({ title: 'Welcome to Voxa', message: 'Your membership is now active', type: 'info' });
-      navigate('/');
+      const response = await fetch('/api/auth/signup/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), email: email.trim(), password, displayName: displayName.trim() })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Unable to send verification code');
+      setStep('otp');
+      setResendIn(60);
+      showToast({ title: 'Verification code sent', message: `Check ${email.trim().toLowerCase()}`, type: 'info' });
     } catch (err) {
       setError(err.message || 'Registration failed. Try a different username or email.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (resendIn <= 0) return undefined;
+    const timer = window.setInterval(() => setResendIn((value) => Math.max(value - 1, 0)), 1000);
+    return () => window.clearInterval(timer);
+  }, [resendIn]);
+
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(otp)) {
+      setError('Enter the 6-digit verification code');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    try {
+      await verifySignupOtp(email.trim(), otp);
+      showToast({ title: 'Email verified', message: 'Your Voxa account is ready', type: 'info' });
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Verification failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (resendIn > 0) return;
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await fetch('/api/auth/signup/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Unable to resend code');
+      setResendIn(60);
+      showToast({ title: 'New code sent', message: 'Check your Gmail inbox', type: 'info' });
+    } catch (err) {
+      setError(err.message || 'Unable to resend code');
     } finally {
       setIsLoading(false);
     }
@@ -59,10 +115,37 @@ export function Signup() {
 
         {/* Signup Form */}
         <form
-          onSubmit={handleSubmit}
+          onSubmit={step === 'details' ? handleSubmit : handleVerify}
           className="p-6 bg-[#160B0F]/90 border border-[#D4A574]/20 rounded-3xl space-y-4 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.8)]"
         >
           {error && <p className="text-xs text-[#E8B4B8] font-medium">{error}</p>}
+
+          {step === 'otp' ? (
+            <>
+              <div>
+                <h2 className="font-serif text-lg font-bold text-[#F5EDE8]">Verify your Gmail</h2>
+                <p className="mt-1 text-xs text-[#A8888D]">Enter the 6-digit code sent to {email.trim().toLowerCase()}.</p>
+              </div>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="000000"
+                className="w-full bg-[#0D0709] text-[#F5EDE8] placeholder-[#A8888D]/60 px-4 py-3 rounded-xl border border-[#D4A574]/20 focus:outline-none focus:border-[#D4A574] text-center text-2xl tracking-[0.45em] font-mono"
+                autoFocus
+              />
+              <Button type="submit" isLoading={isLoading} size="lg" className="w-full uppercase tracking-widest text-xs font-black py-3.5">
+                Verify & Create Account
+              </Button>
+              <button type="button" onClick={handleResend} disabled={isLoading || resendIn > 0} className="w-full text-xs text-[#D4A574] disabled:text-[#A8888D] hover:underline">
+                {resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend verification code'}
+              </button>
+            </>
+          ) : (
+          <>
 
           <div>
             <label className="block text-[11px] font-semibold tracking-wider uppercase text-[#D4A574]/80 mb-1.5">
@@ -124,6 +207,8 @@ export function Signup() {
           >
             Create Membership
           </Button>
+          </>
+          )}
         </form>
 
         {/* Footer Link */}

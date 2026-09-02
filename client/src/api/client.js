@@ -36,7 +36,9 @@ export const api = {
   // Auth
   auth: {
     login: (login, password) => request('/auth/login', { method: 'POST', body: JSON.stringify({ login, password }) }),
-    signup: (username, email, password, displayName) => request('/auth/signup', { method: 'POST', body: JSON.stringify({ username, email, password, displayName }) }),
+    requestSignupOtp: (username, email, password, displayName) => request('/auth/signup/request-otp', { method: 'POST', body: JSON.stringify({ username, email, password, displayName }) }),
+    resendSignupOtp: (email) => request('/auth/signup/resend-otp', { method: 'POST', body: JSON.stringify({ email }) }),
+    verifySignupOtp: (email, otp) => request('/auth/signup/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp }) }),
     me: () => request('/auth/me'),
     getDemoUsers: () => request('/auth/demo-users')
   },
