@@ -1,7 +1,7 @@
 const db = require('./index');
 
 function ensureDemoData() {
-  const marker = 'Demo update:';
+  const marker = 'Demo topic:';
   const existing = db.prepare('SELECT 1 FROM posts WHERE content LIKE ? LIMIT 1').get(`${marker}%`);
   if (existing) {
     return;
@@ -26,12 +26,11 @@ function ensureDemoData() {
   `);
 
   const posts = [
-    ['alex_dev', 'Demo update: shipped a faster search experience for every Voxa conversation. #VoxaLaunch #WebDev', null, '2025-02-02 09:00:00'],
-    ['sarah_ux', 'Demo update: a tiny motion study turned a routine notification into a moment of clarity. #DesignSystems #UIUX', 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1000&auto=format&fit=crop&q=80', '2025-02-02 09:20:00'],
-    ['nova_ai', 'Demo update: open research works best when experiments, failures, and benchmarks are shared in public. #AI #OpenSource', null, '2025-02-02 09:45:00'],
-    ['marcus_code', 'Demo update: measured the new event pipeline at 12ms p95 under a realistic local workload. #Backend #RustLang', null, '2025-02-02 10:10:00'],
-    ['elena_cyber', 'Demo update: security review complete. Strong defaults and small permissions make better products. #CyberSecurity #InfoSec', null, '2025-02-02 10:35:00'],
-    ['voxa_official', 'Demo update: welcome to the community. Find a thread, share an idea, and make the next useful connection. #VoxaLaunch #BuildInPublic', 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1000&auto=format&fit=crop&q=80', '2025-02-02 11:00:00']
+    ['alex_dev', 'Demo topic: fintech teams are building calmer, safer tools for everyday money decisions. #TechNews #Fintech', null, '2025-02-02 09:00:00'],
+    ['sarah_ux', 'Demo topic: design systems turn good intentions into consistent, accessible details. #DesignSystems #UIUX', 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1000&auto=format&fit=crop&q=80', '2025-02-02 09:20:00'],
+    ['nova_ai', 'Demo topic: frontier AI needs open evaluation, careful reasoning, and human agency. #AI #OpenSource', null, '2025-02-02 09:45:00'],
+    ['marcus_code', 'Demo topic: a philosophy of software is simple: make complexity legible and useful.', null, '2025-02-02 10:10:00'],
+    ['voxa_official', 'Demo topic: the latest technology conversations are moving quickly, but thoughtful builders keep asking why. #TechNews #VoxaLaunch', null, '2025-02-02 10:35:00']
   ];
 
   const createdPosts = [];
@@ -52,10 +51,10 @@ function ensureDemoData() {
     }
 
     insertBookmark.run(userIds.alex_dev, createdPosts[1], '2025-02-02 12:10:00');
-    insertBookmark.run(userIds.alex_dev, createdPosts[5], '2025-02-02 12:15:00');
+    insertBookmark.run(userIds.alex_dev, createdPosts[4], '2025-02-02 12:15:00');
 
     insertNotification.run(userIds.alex_dev, userIds.sarah_ux, 'LIKE', createdPosts[0], 0, '2025-02-02 12:20:00');
-    insertNotification.run(userIds.alex_dev, userIds.voxa_official, 'REPLY', createdPosts[5], 0, '2025-02-02 12:25:00');
+    insertNotification.run(userIds.alex_dev, userIds.voxa_official, 'REPLY', createdPosts[4], 0, '2025-02-02 12:25:00');
     insertNotification.run(userIds.sarah_ux, userIds.alex_dev, 'FOLLOW', null, 0, '2025-02-02 12:30:00');
 
     insertMessage.run(userIds.alex_dev, userIds.nova_ai, 'The new research thread is live. Would love your take on the benchmark notes.', null, 0, '2025-02-02 12:35:00');
@@ -63,7 +62,7 @@ function ensureDemoData() {
   });
 
   transaction();
-  console.log('Demo content added: 6 posts, interactions, notifications, and messages.');
+  console.log('Demo topic content added: 5 posts, interactions, notifications, and messages.');
 }
 
 module.exports = ensureDemoData;

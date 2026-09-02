@@ -9,6 +9,13 @@ import { PostSkeleton } from '../components/posts/SkeletonLoader';
 import { useAuth } from '../context/AuthContext';
 
 const TOPIC_CHIPS = ['Curated', 'Trending', 'Fintech & Tech', 'Frontier AI', 'Design Systems', 'Philosophy'];
+const TOPIC_SEARCH_TERMS = {
+  Trending: '#technews',
+  'Fintech & Tech': '#technews',
+  'Frontier AI': '#ai',
+  'Design Systems': '#designsystems',
+  Philosophy: 'philosophy'
+};
 
 export function Explore() {
   const location = useLocation();
@@ -115,7 +122,7 @@ export function Explore() {
               onClick={() => {
                 setActiveChip(chip);
                 if (chip !== 'Curated') {
-                  navigate(`/explore?q=${encodeURIComponent(chip)}`);
+                  navigate(`/explore?q=${encodeURIComponent(TOPIC_SEARCH_TERMS[chip] || chip)}`);
                 } else {
                   navigate('/explore');
                 }
