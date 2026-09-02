@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera } from 'lucide-react';
 import { api } from '../../api/client';
@@ -17,9 +17,31 @@ export function EditProfileModal({ isOpen, onClose, onUpdated }) {
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
   const [coverUrl, setCoverUrl] = useState(user?.cover_url || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(null);
   const [error, setError] = useState('');
+  const avatarInputRef = useRef(null);
+  const coverInputRef = useRef(null);
 
   if (!isOpen) return null;
+
+  const handleImageUpload = async (event, imageType) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setUploadingImage(imageType);
+    setError('');
+    try {
+      const res = await api.upload.uploadImageFile(file);
+      const uploadedUrl = res.url;
+      if (imageType === 'avatar') setAvatarUrl(uploadedUrl);
+      if (imageType === 'cover') setCoverUrl(uploadedUrl);
+    } catch (err) {
+      setError(err.message || 'Failed to upload image');
+    } finally {
+      setUploadingImage(null);
+    }
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -96,6 +118,22 @@ export function EditProfileModal({ isOpen, onClose, onUpdated }) {
               ) : (
                 <div className="w-full h-full bg-gradient-to-r from-[#3B0D19] via-[#5C1A2B] to-[#1A0E12]" />
               )}
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, 'cover')}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                disabled={uploadingImage !== null}
+                className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-full bg-[#0D0709]/85 px-3 py-2 text-xs font-bold text-[#F5EDE8] border border-[#D4A574]/40 hover:bg-[#2B0A12] disabled:opacity-60 transition"
+              >
+                <Camera className="w-3.5 h-3.5" />
+                {uploadingImage === 'cover' ? 'Uploading...' : 'Upload cover'}
+              </button>
             </div>
 
             {/* Avatar preview */}
@@ -107,6 +145,22 @@ export function EditProfileModal({ isOpen, onClose, onUpdated }) {
                   {displayName.charAt(0) || 'V'}
                 </div>
               )}
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'avatar')}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploadingImage !== null}
+                  aria-label="Upload avatar image"
+                  className="absolute inset-0 flex items-center justify-center bg-[#0D0709]/65 text-[#F5EDE8] opacity-0 hover:opacity-100 transition"
+                >
+                  <Camera className="w-5 h-5" />
+                </button>
             </div>
 
             <div className="space-y-4 pt-2">
