@@ -9,7 +9,10 @@ function getTransporter() {
 
   return nodemailer.createTransport({
     service: 'gmail',
-    auth: { user, pass: password }
+    auth: { user, pass: password.replace(/\s+/g, '') },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 15000
   });
 }
 

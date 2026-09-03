@@ -36,18 +36,22 @@ export function Signup() {
     setError('');
 
     try {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 20000);
       const response = await fetch('/api/auth/signup/request-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim(), email: email.trim(), password, displayName: displayName.trim() })
+        body: JSON.stringify({ username: username.trim(), email: email.trim(), password, displayName: displayName.trim() }),
+        signal: controller.signal
       });
+      window.clearTimeout(timeout);
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Unable to send verification code');
       setStep('otp');
       setResendIn(60);
       showToast({ title: 'Verification code sent', message: `Check ${email.trim().toLowerCase()}`, type: 'info' });
     } catch (err) {
-      setError(err.message || 'Registration failed. Try a different username or email.');
+      setError(err.name === 'AbortError' ? 'Email service took too long to respond. Please try again.' : (err.message || 'Registration failed. Try a different username or email.'));
     } finally {
       setIsLoading(false);
     }
