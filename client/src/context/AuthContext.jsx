@@ -40,8 +40,8 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
-  const verifySignupOtp = async (email, otp) => {
-    const data = await api.auth.verifySignupOtp(email, otp);
+  const signup = async (username, email, password, displayName) => {
+    const data = await api.auth.signup(username, email, password, displayName);
     localStorage.setItem('voxa_token', data.token);
     setToken(data.token);
     setUser(data.user);
@@ -80,7 +80,7 @@ export function AuthProvider({ children }) {
         isLoading,
         isAuthenticated: !!user,
         login,
-        verifySignupOtp,
+        signup,
         logout,
         quickLoginAs,
         updateUser,

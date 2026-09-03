@@ -18,21 +18,6 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS signup_verifications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    username TEXT NOT NULL,
-    display_name TEXT NOT NULL,
-    password_hash TEXT NOT NULL,
-    otp_hash TEXT NOT NULL,
-    expires_at INTEGER NOT NULL,
-    last_sent_at INTEGER NOT NULL,
-    attempts INTEGER DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_signup_verifications_expires ON signup_verifications(expires_at);
-
 CREATE TABLE IF NOT EXISTS posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
