@@ -8,7 +8,10 @@ function getTransporter() {
   }
 
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    requireTLS: true,
     auth: { user, pass: password.replace(/\s+/g, '') },
     connectionTimeout: 15000,
     greetingTimeout: 15000,
